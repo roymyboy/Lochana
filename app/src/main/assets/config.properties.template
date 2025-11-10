@@ -1,0 +1,8 @@
+# OpenAI API Configuration Template
+# Copy this file to config.properties and add your API key
+# Get your API key from: https://platform.openai.com/api-keys
+# 
+# IMPORTANT: config.properties is gitignored and should never be committed
+# Place the actual config.properties file in app/src/main/assets/
+OPENAI_API_KEY=<YOUR_OPENAI_API_KEY>
+

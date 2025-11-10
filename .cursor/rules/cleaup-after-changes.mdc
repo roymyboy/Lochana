@@ -1,0 +1,4 @@
+---
+alwaysApply: false
+---
+Clean up unused codes from the file everytime there is a code change before builidng the project

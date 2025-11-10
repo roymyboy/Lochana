@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Lochana</string>
+    <string name="copy_single_response">Copy response</string>
+    <string name="read_single_response">Read response aloud</string>
+    <string name="chat_image_preview_content_description">Analyzed scene preview</string>
+    <string name="chat_image_preview_fallback_description">No additional description available.</string>
+    <string name="chat_image_preview_error">Unable to open preview.</string>
+    <string name="chat_image_preview_close">Close preview</string>
+    <string name="voice_permission_required">Microphone permission required for voice input</string>
+    <string name="voice_input_error">Could not start voice input</string>
+    <string name="speech_no_text">No response to read</string>
+    <string name="speech_not_ready">Text-to-speech not available</string>
+    <string name="mode_analysis">Analysis</string>
+    <string name="mode_ocr">OCR</string>
+    <string name="toast_ocr_video_not_supported">OCR mode supports single capture only.</string>
+    <string name="toast_ocr_failed">Unable to recognize text.</string>
+    <string name="toast_ocr_no_text">No text detected.</string>
+</resources>
