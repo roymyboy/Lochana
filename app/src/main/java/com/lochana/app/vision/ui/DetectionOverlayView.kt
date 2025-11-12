@@ -1,9 +1,10 @@
-package com.lochana.app
+package com.lochana.app.vision.ui
 
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import com.lochana.app.vision.YOLOv11Manager
 import kotlin.math.max
 
 /**

@@ -1,7 +1,14 @@
-package com.lochana.app
+package com.lochana.app.ui.components
 
-import android.graphics.*
+import android.animation.ValueAnimator
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ColorFilter
+import android.graphics.Paint
+import android.graphics.PixelFormat
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.view.animation.DecelerateInterpolator
 import android.os.Handler
 import android.os.Looper
 

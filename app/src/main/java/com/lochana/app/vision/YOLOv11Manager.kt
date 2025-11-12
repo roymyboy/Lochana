@@ -1,4 +1,4 @@
-package com.lochana.app
+package com.lochana.app.vision
 
 import ai.onnxruntime.*
 import android.content.Context

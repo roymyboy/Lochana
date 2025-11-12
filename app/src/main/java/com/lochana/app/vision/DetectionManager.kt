@@ -1,4 +1,4 @@
-package com.lochana.app
+package com.lochana.app.vision
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
@@ -295,7 +295,7 @@ class DetectionManager(
             
             val yuvImage = android.graphics.YuvImage(nv21, android.graphics.ImageFormat.NV21, mediaImage.width, mediaImage.height, null)
             val out = ByteArrayOutputStream()
-            yuvImage.compressToJpeg(android.graphics.Rect(0, 0, mediaImage.width, mediaImage.height), 80, out)
+            yuvImage.compressToJpeg(android.graphics.Rect(0, 0, mediaImage.width, mediaImage.height), 95, out)
             val imageBytes = out.toByteArray()
             
             val bitmap = android.graphics.BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)

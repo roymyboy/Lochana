@@ -1,4 +1,4 @@
-package com.lochana.app
+package com.lochana.app.openai
 
 import android.content.Context
 import android.graphics.Bitmap

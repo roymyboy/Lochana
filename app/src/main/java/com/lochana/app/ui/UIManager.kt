@@ -1,4 +1,4 @@
-package com.lochana.app
+package com.lochana.app.ui
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
@@ -26,13 +26,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.lochana.app.R
 import com.lochana.app.databinding.ActivityMainBinding
-import com.lochana.app.CaptureButtonDrawable
-import com.lochana.app.ui.ChatController
-import com.lochana.app.ui.ChatController.MessageItem
-import com.lochana.app.ui.PromptController
-import com.lochana.app.ui.PreviewDialogController
-import com.lochana.app.ui.SnapshotManager
+import com.lochana.app.ui.components.CaptureButtonDrawable
 import com.lochana.app.ui.SpeechController
 import com.lochana.app.ui.SpeechController.SpeakStateListener
 
@@ -52,8 +48,8 @@ class UIManager(
         private const val MAX_DIVIDER_PERCENT = 0.9f
         private const val MIN_CHAT_FONT_SCALE = 0.75f
         private const val MAX_CHAT_FONT_SCALE = 1.6f
-        private const val SNAPSHOT_MAX_DIMENSION = 720
-        private const val SNAPSHOT_JPEG_QUALITY = 80
+        private const val SNAPSHOT_MAX_DIMENSION = 1440
+        private const val SNAPSHOT_JPEG_QUALITY = 95
         private const val MAX_SNAPSHOT_FILES = 30
         private val STATUS_KEYWORDS = listOf("analyzing", "capturing", "camera error", "processing", "initializing", "ocr")
     }
@@ -152,7 +148,7 @@ class UIManager(
             snapshotManager,
             previewDialogController,
             object : ChatController.Listener {
-                override fun onSpeakRequested(index: Int, message: MessageItem) {
+                override fun onSpeakRequested(index: Int, message: ChatController.MessageItem) {
                     toggleMessageSpeech(index)
                 }
 

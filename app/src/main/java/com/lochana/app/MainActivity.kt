@@ -9,11 +9,23 @@ import androidx.camera.view.PreviewView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.ViewCompat
+import android.os.Build
+import com.lochana.app.camera.CameraManager
+import com.lochana.app.core.ConfigLoader
+import com.lochana.app.core.CrashHandler
+import com.lochana.app.core.PermissionManager
 import com.lochana.app.databinding.ActivityMainBinding
 import com.lochana.app.ocr.OcrProcessor
-import com.lochana.app.UIManager.CaptureMode
+import com.lochana.app.pipeline.HighResolutionCapturePipeline
+import com.lochana.app.ui.UIManager
+import com.lochana.app.ui.UIManager.CaptureMode
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import com.lochana.app.vision.DetectionManager
+import com.lochana.app.vision.YOLOv11Manager
+import com.lochana.app.openai.OpenAIManager
+import com.lochana.app.openai.OpenAIKeyManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var uiManager: UIManager
     private lateinit var openAIManager: OpenAIManager
     private lateinit var yoloManager: YOLOv11Manager
+    private lateinit var highResPipeline: HighResolutionCapturePipeline
     private val ocrProcessor: OcrProcessor by lazy { OcrProcessor() }
     private var pendingCustomPrompt: String? = null
     private var pendingPreviewImagePath: String? = null
@@ -63,12 +76,27 @@ class MainActivity : AppCompatActivity() {
     private fun setupFullScreen() {
         supportActionBar?.hide()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.attributes = window.attributes.apply {
+                layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+            }
+        }
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.statusBarColor = android.graphics.Color.TRANSPARENT
         window.navigationBarColor = android.graphics.Color.TRANSPARENT
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.cameraContainer) { view, insets ->
+            val statusInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.displayCutout())
+            view.setPadding(view.paddingLeft, 0, view.paddingRight, view.paddingBottom)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.viewFinder) { _, insets ->
+            WindowInsetsCompat.CONSUMED
+        }
     }
 
     private fun initializeComponents() {
@@ -80,6 +108,7 @@ class MainActivity : AppCompatActivity() {
             permissionManager = PermissionManager(this, binding)
             uiManager = UIManager(this, binding)
             openAIManager = OpenAIManager(this)
+            highResPipeline = HighResolutionCapturePipeline(cameraManager, cameraExecutor)
             
             loadOpenAIKey()
             yoloManager.initialize()
@@ -476,26 +505,40 @@ class MainActivity : AppCompatActivity() {
         if (!::uiManager.isInitialized || !::openAIManager.isInitialized) return
 
         pendingPreviewImagePath = null
-        val previewCopy = try {
+        val fallbackCopy = try {
             bitmap.copy(bitmap.config ?: Bitmap.Config.ARGB_8888, false)
-        } catch (e: OutOfMemoryError) {
-            Log.w(TAG, "⚠️ Unable to copy bitmap for preview: ${e.message}")
-            null
         } catch (e: Exception) {
-            Log.w(TAG, "⚠️ Error copying bitmap for preview: ${e.message}")
             null
         }
-
-        pendingPreviewImagePath = uiManager.prepareResponsePreview(previewCopy)
 
         val promptSource = when {
             pendingCustomPrompt?.isNotBlank() == true -> pendingCustomPrompt
             else -> uiManager.consumeUserPrompt()
         }
 
-        uiManager.ensureUserPromptVisible(promptSource)
-        openAIManager.captureSingleFrame(bitmap, promptSource)
         pendingCustomPrompt = null
+
+        uiManager.ensureUserPromptVisible(promptSource)
+
+        val proceedWithAnalysis: (Bitmap?) -> Unit = { previewBitmap ->
+            if (previewBitmap != null) {
+                pendingPreviewImagePath = uiManager.prepareResponsePreview(previewBitmap)
+            } else if (fallbackCopy != null) {
+                pendingPreviewImagePath = uiManager.prepareResponsePreview(fallbackCopy)
+            }
+
+        openAIManager.captureSingleFrame(bitmap, promptSource)
+        }
+
+        highResPipeline.captureBitmap(
+            onSuccess = { highResBitmap ->
+                proceedWithAnalysis(highResBitmap)
+            },
+            onError = { error ->
+                Log.e(TAG, "❌ High-res capture failed: ${error.message}")
+                proceedWithAnalysis(null)
+            }
+        )
     }
 
     private fun handleOcrSingleFrame(bitmap: Bitmap) {

@@ -279,10 +279,12 @@ class ChatController(
                     previewDialogController.show(message.imagePath, message.text)
                 }
 
+                val bitmap = snapshotManager.loadSnapshot(message.imagePath)
+
                 val imageContainer = LinearLayout(context).apply {
                     orientation = LinearLayout.VERTICAL
                     layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                     ).apply {
                         bottomMargin = 8.dp()
@@ -291,15 +293,26 @@ class ChatController(
                     clipToOutline = true
                 }
 
+                val (targetWidth, targetHeight) = bitmap?.let {
+                    val maxWidth = (context.resources.displayMetrics.widthPixels * 0.2f).toInt()
+                    val clampedWidth = it.width.coerceAtMost(maxWidth)
+                    val scale = clampedWidth.toFloat() / it.width.toFloat()
+                    val scaledHeight = (it.height * scale).roundToInt()
+                    clampedWidth to scaledHeight
+                } ?: run {
+                    val placeholderWidth = (context.resources.displayMetrics.widthPixels * 0.15f).toInt()
+                    val placeholderHeight = (placeholderWidth * 9f / 16f).roundToInt()
+                    placeholderWidth to placeholderHeight
+                }
+
                 val imageView = ImageView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        PREVIEW_HEIGHT_DP.dp()
-                    )
-                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    layoutParams = LinearLayout.LayoutParams(targetWidth, targetHeight).apply {
+                        gravity = Gravity.START
+                    }
+                    adjustViewBounds = true
+                    scaleType = ImageView.ScaleType.FIT_CENTER
                     contentDescription = context.getString(R.string.chat_image_preview_content_description)
 
-                    val bitmap = snapshotManager.loadSnapshot(message.imagePath)
                     if (bitmap != null) {
                         setImageBitmap(bitmap)
                     } else {

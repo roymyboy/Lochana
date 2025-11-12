@@ -171,23 +171,33 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 app/
 ├── src/main/java/com/lochana/app/
 │   ├── MainActivity.kt
-│   ├── CameraManager.kt
-│   ├── DetectionManager.kt
-│   ├── DetectionOverlayView.kt
-│   ├── DetectionTracker.kt
-│   ├── YOLOv11Manager.kt
-│   ├── OpenAIManager.kt
-│   ├── OpenAIKeyManager.kt
-│   ├── ConfigLoader.kt
-│   ├── UIManager.kt
-│   ├── PermissionManager.kt
-│   ├── CrashHandler.kt
+│   ├── camera/
+│   │   └── CameraManager.kt
+│   ├── core/
+│   │   ├── ConfigLoader.kt
+│   │   ├── CrashHandler.kt
+│   │   └── PermissionManager.kt
+│   ├── openai/
+│   │   ├── OpenAIManager.kt
+│   │   └── OpenAIKeyManager.kt
+│   ├── pipeline/
+│   │   └── HighResolutionCapturePipeline.kt
+│   ├── vision/
+│   │   ├── DetectionManager.kt
+│   │   ├── DetectionTracker.kt
+│   │   ├── YOLOv11Manager.kt
+│   │   └── ui/
+│   │       └── DetectionOverlayView.kt
 │   ├── ui/
+│   │   ├── UIManager.kt
 │   │   ├── ChatController.kt
 │   │   ├── PromptController.kt
 │   │   ├── SpeechController.kt
 │   │   ├── PreviewDialogController.kt
 │   │   ├── SnapshotManager.kt
+│   │   ├── ZoomableImageView.kt
+│   │   └── components/
+│   │       └── CaptureButtonDrawable.kt
 │   └── ocr/
 │       └── OcrProcessor.kt
 ├── src/main/assets/

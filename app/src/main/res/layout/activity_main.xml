@@ -60,7 +60,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- YOLOv11 Detection Overlay -->
-    <com.lochana.app.DetectionOverlayView
+    <com.lochana.app.vision.ui.DetectionOverlayView
         android:id="@+id/detectionOverlay"
         android:layout_width="0dp"
         android:layout_height="0dp"
