@@ -1,6 +1,6 @@
 # Lochana – Real-Time Vision Copilot
 
-> Updated November 2025 – reflects the current development branch with YOLOv11 object detection, conversational UI, OCR mode, and GPT-4 Omni integrations.
+> Updated November 2025 – reflects the current development branch with YOLOv11 object detection, conversational UI, OCR mode, and OpenAI GPT integrations.
 
 ## 🎯 Overview
 
